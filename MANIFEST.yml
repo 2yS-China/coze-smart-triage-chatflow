@@ -1,0 +1,11 @@
+type: Workflow
+version: 1.0.0
+main:
+    id: 7698315584057425935
+    name: daozhen
+    desc: 智能导诊
+    icon: plugin_icon/chatflow-icon.png
+    version: ""
+    flowMode: 3
+    commitId: ""
+sub: []

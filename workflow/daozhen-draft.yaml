@@ -1,0 +1,2623 @@
+schema_version: 1.0.0
+name: daozhen
+id: 7698315584057425935
+description: "智能导诊"
+mode: chatflow
+icon: plugin_icon/chatflow-icon.png
+nodes:
+    - id: "100001"
+      type: start
+      title: 开始
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Start-v2.jpg
+      description: "工作流的起始节点，用于设定启动工作流需要的信息"
+      position:
+        x: -183.25975116215585
+        y: 1281
+      parameters:
+        node_outputs:
+            CONVERSATION_NAME:
+                type: string
+                value: null
+                default_value: Default
+                description: 本次请求绑定的会话，会自动写入消息、会从该会话读对话历史。
+            USER_INPUT:
+                type: string
+                value: null
+    - id: "900001"
+      type: end
+      title: 结束
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-End-v2.jpg
+      description: "工作流的最终节点，用于返回工作流运行后的结果信息"
+      position:
+        x: 5944.4138945541345
+        y: 1199.5
+      parameters:
+        terminatePlan: returnVariables
+    - id: "112337"
+      type: llm
+      title: 症状总结
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-LLM-v2.jpg
+      description: "调用大语言模型,使用变量和提示词生成回复"
+      version: "3"
+      position:
+        x: 3632.8133862359578
+        y: 348.5281706318418
+      parameters:
+        fcParam:
+            knowledgeFCParam: {}
+            llmNodeUID: ""
+            spaceID: "7398072437163933732"
+            workflowVersion: ""
+        fcParamVar:
+            knowledgeFCParam: {}
+        llmParam:
+            - name: temperature
+              input:
+                type: float
+                value: "1"
+            - name: topP
+              input:
+                type: float
+                value: "0.7"
+            - name: maxTokens
+              input:
+                type: integer
+                value: "4096"
+            - name: frequencyPenalty
+              input:
+                type: float
+                value: "0"
+            - name: responseFormat
+              input:
+                type: integer
+                value: "0"
+            - name: modelName
+              input:
+                type: string
+                value: Doubao-1.5-pro-32k
+            - name: modelType
+              input:
+                type: integer
+                value: "215539901"
+            - name: generationDiversity
+              input:
+                type: string
+                value: default_val
+            - name: parameters
+              input:
+                type: object
+                value: null
+            - name: prompt
+              input:
+                type: string
+                value: |
+                    患者信息：{{input1}}
+            - name: enableChatHistory
+              input:
+                type: boolean
+                value: false
+            - name: chatHistoryRound
+              input:
+                type: integer
+                value: "3"
+            - name: systemPrompt
+              input:
+                type: string
+                value: "# 角色\n你是大同三人民医院资深且医术精湛的全科医生，不仅具备深厚的医学知识储备，还有敏锐的诊断能力。你能快速、精准地根据患者提供的信息，预判患者可能患有的疾病，并为其提供确切的就诊科室指引，同时给出针对性的运动和饮食建议。\n\n## 目标\n1. 根据患者描述{{input1}}，分析明确患者症状并提供建议\n\n## 技能\n###  技能1：症状分析\n1. 全面整合患者提供的所有信息，结合会话历史，运用专业学识和丰富的临床经验，准确推断患者症状。\n2. 若用户描述内容包含“小孩”“儿童”等信息，优先建议前往儿科就诊。\n3. 推断就诊科室包含\"血液内科\n肾病内科\n中医科\n放疗科\n康复科\n眼科\n口腔科\n心血管内科\n神经内科\n针灸理疗科\n疼痛科\n风湿免疫科\n肿瘤科\n心理门诊\n乳腺科\n结核病科\n消化内科\n呼吸与危重症医学科\n内分泌内科\n儿科\n感染性疾病科(肝病门诊)\n老年病科。\n普外科(肝胆外科)\n胸外科\n泌尿外科\n骨科\n耳鼻喉科\n结直肠外科\n整形美容科\n生殖中心\n妇科\n产科\n神经外科\n胃肠外科\n皮肤科\n核医学科\n介入科\n方便门诊\n营养科\n全科医疗科\n新冠综合门诊(发热门诊)\n高压氧\n儿童保健科\n血管通路门诊\n心脏大血管外科\n药师门诊\n麻醉科\"\n4. 用户输出内容包含以下信息匹配整形美容科，信息包含“色斑加重、新色斑出现、皮肤变黑、重睑线不自然、脸部肿胀、黑色素、双眼皮”等\n\n###  技能2：疾病名称获取\n1. 如果输出内容包含疾病名称，则疾病名称输出格式[疾病名称](https://weixin.sxyygh.com/hospital/1962/#/disease/detail?hospitaluid=1962&title=疾病名称)\n2. 疾病名称举例“颈椎病”“肺炎”“鼻炎”等相关疾病标签都属于疾病名称\n\n\n\n\n## 输出\n1. 按照以下结构输出\n    **症状 :** <具体症状名称，如果输出内容包含疾病名称按照该格式输出[疾病名称](https://weixin.sxyygh.com/hospital/1962/#/disease/detail?hospitaluid=1962&title=疾病名称)>\n    **症状描述 :** <详细且准确地描述该症状的具体表现>\n    **可能病因:** <详细阐述病因，如果输出内容包含疾病名称按照该格式输出[疾病名称](https://weixin.sxyygh.com/hospital/1962/#/disease/detail?hospitaluid=1962&title=疾病名称)>\n    **就医建议 :**\n        <针对病因 1 的【**二级标科**】及可能的检查项目>\n\n      **运动建议**\n    <结合症状给出关于运动的合理建议>\n    **生活建议**\n    <适合该症状的饮食调整建议>\n\n## 限制\n- 回复内容需基于医学专业知识，避免给出没有依据的建议。\n- 语言表达应清晰易懂，便于患者理解。 \n- 严格按照输出结构执"
+            - name: stableSystemPrompt
+              input:
+                type: string
+                value: ""
+            - name: canContinue
+              input:
+                type: boolean
+                value: false
+            - name: loopPromptVersion
+              input:
+                type: string
+                value: ""
+            - name: loopPromptName
+              input:
+                type: string
+                value: ""
+            - name: loopPromptId
+              input:
+                type: string
+                value: ""
+        node_inputs:
+            - name: input1
+              input:
+                type: string
+                value:
+                    path: all_question_answer
+                    ref_node: "196270"
+        node_outputs:
+            output:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            switch: false
+            timeoutMs: 600000
+    - id: "122214"
+      type: intent
+      title: 意图识别_1
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Intent-v2.jpg
+      description: "用于用户输入的意图识别，并将其与预设意图选项进行匹配。"
+      position:
+        x: 1040.2702678231244
+        y: 669.821234868016
+      parameters:
+        chatHistorySetting:
+            chatHistoryRound: 3
+            enableChatHistory: true
+        intents:
+            - name: 症状咨询内容，如“我最近感冒了，应该挂什么科”、“晚上睡觉老是咳嗽，挂什么科”等
+            - name: 直接咨询科室名称，如“骨科”、“儿科最近有号么”、"血糖偏高挂什么科"、“我要挂骨科”等相关内容
+            - name: 推荐科室医生。如“推荐骨科医生”，“外科医生”等
+            - name: 当用户咨询内容为症状相关内容，如“偶尔头晕耳鸣”等
+            - name: 当用户输出内容为症状名词时，如“惊厥”等
+            - name: |-
+                当用户输出内容为图片内容相关，比如“图片链接{
+                  "url": "https://lf26-bot-platform-tos-sign.coze.cn/bot-studio-bot-platform/bot_files/2399565006511866/image/png/7484205147900575807/7777777777%20%281%29.png?lk3s=50ccb0c5&x-expires=1743157239&x-signature=e5kO9bGCggTzLelBCIXvpPZIaCQ%3D"
+                }”
+            - name: 当用户输入内容为药品相关信息时，比如“xxx药品用法用量”
+            - name: 当用户咨询“哪个科可以缝伤美容”等相关美容时或者整形美容相关的信息，比如“色斑加重、新色斑出现、皮肤变黑、重睑线不自然、脸部肿胀、黑色素、双眼皮”等相关内容，用户意图直接咨询科室
+            - name: 我要挂号
+            - name: 当用户输出内容为“我要挂xxx科”等相关内容时
+            - name: 当用户输入为姓名时，或者包含医生姓名时，比如“皮肤科赵越”，“赵越”等相关类似输出内容
+        llmParam:
+            chatHistoryRound: 3
+            enableChatHistory: true
+            generationDiversity: balance
+            maxTokens: 4096
+            modelName: DeepSeek-V4-flash
+            modelType: 7.22014726e+08
+            parameters:
+                reasoning_effort: minimal
+            prompt:
+                type: string
+                value:
+                    content: '{{query}}'
+                    type: literal
+            responseFormat: 2
+            systemPrompt:
+                type: string
+                value:
+                    content: |-
+                        1. 当用户输出内容为“我要挂xxx科”等相关内容时，表示拥护想要咨询科室挂号
+                        2. 判断用户输入内容语义理解，比如用户输入“骨科在哪里”其实是在询问位置信息
+                    type: literal
+            temperature: 0.8
+            thinkingType: enabled
+            topP: 1
+        mode: all
+        node_inputs:
+            - name: query
+              input:
+                value:
+                    path: USER_INPUT
+                    ref_node: "100001"
+        node_outputs:
+            classificationId:
+                type: integer
+                value: null
+            reason:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            timeoutMs: 60000
+        version: "2"
+    - id: "168803"
+      type: llm
+      title: 推荐科室
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-LLM-v2.jpg
+      description: "调用大语言模型,使用变量和提示词生成回复"
+      version: "3"
+      position:
+        x: 2731.328649681272
+        y: 759.2131648522428
+      parameters:
+        fcParam:
+            knowledgeFCParam:
+                global_setting:
+                    auto: false
+                    min_score: 0.5
+                    no_recall_reply_customize_prompt: 抱歉，您的问题超出了我的知识范围，并且无法在当前阶段回答
+                    no_recall_reply_mode: 0
+                    search_mode: 0
+                    show_source: false
+                    show_source_mode: 0
+                    top_k: 3
+                    use_nl2_sql: true
+                    use_rerank: true
+                    use_rewrite: true
+                knowledgeList:
+                    - id: "7503521654061711397"
+                      knowledgeType: 0
+                      name: 疾病百科
+                      volcano_dataset_service_info:
+                        id: ""
+                        name: ""
+            llmNodeUID: ""
+            spaceID: "7398072437163933732"
+            workflowVersion: ""
+        fcParamVar:
+            knowledgeFCParam:
+                knowledgeList: []
+        llmParam:
+            - name: apiMode
+              input:
+                type: integer
+                value: "0"
+            - name: temperature
+              input:
+                type: float
+                value: "1"
+            - name: topP
+              input:
+                type: float
+                value: "0.7"
+            - name: maxTokens
+              input:
+                type: integer
+                value: "32768"
+            - name: responseFormat
+              input:
+                type: integer
+                value: "2"
+            - name: spCurrentTime
+              input:
+                type: boolean
+                value: false
+            - name: spAntiLeak
+              input:
+                type: boolean
+                value: false
+            - name: thinkingType
+              input:
+                type: string
+                value: auto
+            - name: modelName
+              input:
+                type: string
+                value: ' Doubao-Seed-1.6'
+            - name: modelType
+              input:
+                type: integer
+                value: "1095497078"
+            - name: generationDiversity
+              input:
+                type: string
+                value: default_val
+            - name: parameters
+              input:
+                type: object
+                properties:
+                    max_completion_tokens:
+                        type: integer
+                        value: "0"
+                value: null
+            - name: prompt
+              input:
+                type: string
+                value: 用户输入内容{{input}}
+            - name: enableChatHistory
+              input:
+                type: boolean
+                value: false
+            - name: chatHistoryRound
+              input:
+                type: integer
+                value: "3"
+            - name: systemPrompt
+              input:
+                type: string
+                value: |-
+                    # 角色
+                    你是长治和平医院的资深全科专家，拥有卓越的医术、深厚的医学知识储备和敏锐的诊断能力，能迅速准确地预判患者可能患有的疾病，并为其提供确切的就诊科室指引。
+
+                    ### 技能 1: 疾病判断与解释
+                    1. 仔细分析患者提供的信息，运用专业知识和丰富临床经验，严格按照格式推断可能患有的[疾病名称](https://weixin.sxyygh.com/hospital/1962/#/disease/detail?hospitaluid=1962&title=疾病名称)，并给出疾病解释。
+                    - 回复示例：[肩周炎](https://weixin.sxyygh.com/hospital/1962/#/disease/detail?hospitaluid=1962&title=肩周炎)
+
+                    ### 技能 2: 就诊科室推荐
+                    1. 结合用户描述，运用专业知识和丰富临床经验，推断就诊科室。
+                    2. 当用户输入内容{{input}}为推荐xx科医生，精确匹配就诊科室，例如“推荐骨科医生”，匹配就诊科为儿科，依此类推。
+                    3. 当输出内容为科室名称时，要求输出科室可能患有的[疾病名称](https://weixin.sxyygh.com/hospital/1962/#/disease/detail?hospitaluid=1962&title=疾病名称)，并且推荐就诊科室
+                    4. 推断就诊科室包含"血液内科
+                    肾病内科
+                    中医科
+                    放疗科
+                    康复科
+                    眼科
+                    口腔科
+                    心血管内科
+                    神经内科
+                    针灸理疗科
+                    疼痛科
+                    风湿免疫科
+                    肿瘤科
+                    心理门诊
+                    乳腺科
+                    结核病科
+                    消化内科
+                    呼吸与危重症医学科
+                    内分泌内科
+                    儿科
+                    感染性疾病科(肝病门诊)
+                    老年病科。
+                    普外科(肝胆外科)
+                    胸外科
+                    泌尿外科
+                    骨科
+                    耳鼻喉科
+                    结直肠外科
+                    整形美容科
+                    生殖中心
+                    妇科
+                    产科
+                    神经外科
+                    胃肠外科
+                    皮肤科
+                    核医学科
+                    介入科
+                    方便门诊
+                    营养科
+                    全科医疗科
+                    新冠综合门诊(发热门诊)
+                    高压氧
+                    儿童保健科
+                    血管通路门诊
+                    心脏大血管外科
+                    药师门诊
+                    麻醉科"
+                    4. 用户输出内容包含以下信息匹配整形美容科，信息包含“色斑加重、新色斑出现、皮肤变黑、重睑线不自然、脸部肿胀、黑色素、双眼皮”等。
+
+                    # 输出
+                    1. 严格按照以下格式输出：
+                    根据您的表述，您可能患有[疾病名称](https://weixin.sxyygh.com/hospital/1962/#/disease/detail?hospitaluid=1962&title=疾病名称)。疾病名称指的是 <疾病解释>。建议您前往 **<就诊科室>** 就诊。
+                    2. 当输出内容包含疾病名称时，按照以下格式输出：根据您的表述，您可能患有[妇科炎症](https://weixin.sxyygh.com/hospital/1962/#/disease/detail?hospitaluid=1962&title=妇科炎症)。[妇科炎症]指的是 女性生殖系统的炎症，包括[外阴炎](https://weixin.sxyygh.com/hospital/1962/#/disease/detail?hospitaluid=1962&title=外阴炎)、[阴道炎](https://weixin.sxyygh.com/hospital/1962/#/disease/detail?hospitaluid=1962&title=阴道炎)、[宫颈炎](https://weixin.sxyygh.com/hospital/1962/#/disease/detail?hospitaluid=1962&title=宫颈炎)、[盆腔炎](https://weixin.sxyygh.com/hospital/1962/#/disease/detail?hospitaluid=1962&title=盆腔炎)等，主要是由于病原体感染、外部刺激、激素水平变化等因素引起。建议您前往 妇科 就诊。
+
+                    ## 问答示例
+                    1. 正常问答：
+                    - 用户输出：骨科
+                    - 系统回答：根据您的表述，您可能患有[妇科炎症](https://weixin.sxyygh.com/hospital/1962/#/disease/detail?hospitaluid=1962&title=妇科炎症)。[妇科炎症]指的是 女性生殖系统的炎症，包括[外阴炎](https://weixin.sxyygh.com/hospital/1962/#/disease/detail?hospitaluid=1962&title=外阴炎)、[阴道炎](https://weixin.sxyygh.com/hospital/1962/#/disease/detail?hospitaluid=1962&title=阴道炎)、[宫颈炎](https://weixin.sxyygh.com/hospital/1962/#/disease/detail?hospitaluid=1962&title=宫颈炎)、[盆腔炎](https://weixin.sxyygh.com/hospital/1962/#/disease/detail?hospitaluid=1962&title=盆腔炎)等，主要是由于病原体感染、外部刺激、激素水平变化等因素引起。建议您前往 妇科 就诊。
+
+                    ## 限制:
+                    - 仅针对医学问题进行回复，拒绝回答与医学无关的话题。
+                    - 严格按照给定格式输出内容，不得偏离框架要求。
+                    - 对同一问题始终回复相同内容。
+                    - 禁止重复提交信息，依据患者描述输出结果。
+            - name: stableSystemPrompt
+              input:
+                type: string
+                value: ""
+            - name: canContinue
+              input:
+                type: boolean
+                value: false
+            - name: loopPromptVersion
+              input:
+                type: string
+                value: ""
+            - name: loopPromptName
+              input:
+                type: string
+                value: ""
+            - name: loopPromptId
+              input:
+                type: string
+                value: ""
+        node_inputs:
+            - name: input
+              input:
+                value:
+                    path: USER_INPUT
+                    ref_node: "100001"
+        node_outputs:
+            output:
+                type: string
+                value: null
+            reasoning_content:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            switch: false
+            timeoutMs: 600000
+    - id: "196270"
+      type: loop
+      title: 循环
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Loop-v2.jpg
+      description: "用于通过设定循环次数和逻辑，重复执行一系列任务"
+      position:
+        x: 2947.0543087073256
+        y: 210.88535270640853
+      canvas_position:
+        x: 1980.0954977319366
+        y: -823.858101224731
+      parameters:
+        loopCount:
+            type: integer
+            value:
+                content: 3
+                rawMeta:
+                    type: 2
+                type: literal
+        loopType: count
+        node_outputs:
+            all_question_answer:
+                value:
+                    type: string
+                    value:
+                        path: var_all_question_answer
+                        ref_node: "196270"
+        variableParameters:
+            - name: var_all_question_answer
+              input:
+                type: string
+                value: "\"\""
+      nodes:
+        - id: "129033"
+          type: llm
+          title: 症状分析_1
+          icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-LLM-v2.jpg
+          description: "调用大语言模型,使用变量和提示词生成回复"
+          version: "3"
+          position:
+            x: 124.02939433881042
+            y: 39.49999999999997
+          parameters:
+            fcParamVar:
+                knowledgeFCParam: {}
+            llmParam:
+                - name: temperature
+                  input:
+                    type: float
+                    value: "0.7"
+                - name: topP
+                  input:
+                    type: float
+                    value: "0.7"
+                - name: maxTokens
+                  input:
+                    type: integer
+                    value: "4096"
+                - name: frequencyPenalty
+                  input:
+                    type: float
+                    value: "0"
+                - name: responseFormat
+                  input:
+                    type: integer
+                    value: "2"
+                - name: modelName
+                  input:
+                    type: string
+                    value: Doubao-1.5-pro-32k
+                - name: modelType
+                  input:
+                    type: integer
+                    value: "215539901"
+                - name: generationDiversity
+                  input:
+                    type: string
+                    value: balance
+                - name: parameters
+                  input:
+                    type: object
+                    value: null
+                - name: prompt
+                  input:
+                    type: string
+                    value: |
+                        用户输入的是{{USER_INPUT}}
+                        已经生成的问答历史是 {{var_all_question_answer}}，不要重复提问。
+                        根据患者描述进行相关症状信息收集，提出问题
+                - name: enableChatHistory
+                  input:
+                    type: boolean
+                    value: true
+                - name: chatHistoryRound
+                  input:
+                    type: integer
+                    value: "10"
+                - name: systemPrompt
+                  input:
+                    type: string
+                    value: "# 角色\n您是一位专业的智能预问诊助手，致力于为患者提供科学的症状评估支持。要求根据患者症状描述{{USER_INPUT}},1）高效完成诊前信息收集任务；2）精准分析用户描述的症状信息，提供简明易懂的解释说明。在执行问诊过程中，请始终遵循以下原则请始终遵循以下原则：\n\n【智能交互机制】\n\n动态分析系统：结合用户当前描述的症状及历史对话记录，建立动态症状分析模型，自动识别信息缺失环节\n\n阶梯式问诊法：采用\"主诉-伴随症状\"的医学逻辑框架，通过递进式提问完善症状画像\n\n智能决策引擎：基于症状关联图谱，自动生成最相关的后续追问问题，每次提问需包含但不限于：\n\n症状持续时间量化（精确到小时/天）\n\n典型临床表现鉴别（如发热需区分热型）\n\n危险信号识别（如脱水征象评估）\n\n【沟通规范】\n\n表达风格：专业严谨而不失温暖体贴，使用患者易懂的医学术语（如用\"喷射状呕吐\"替代专业术语\"喷射性呕吐\"）\n\n信息确认：对关键症状进行双重验证（如：\"您提到的呼吸急促，是指安静状态下每分钟呼吸超过40次吗？\"）\n\n分级警示：对红色预警症状（如抽搐、意识改变）立即提示紧急就医，对黄色预警症状（如持续发热）给出观察建议\n\n【核心能力要求】\n\n症状关联分析：能识别表面症状的潜在联系（如咳嗽伴犬吠样声音→喉炎可能）\n\n\n请始终以患者健康需求为中心，通过结构化问诊帮助患者在专业指导下准确、完整地提供诊疗所需信息。\n\n# 询问思维\n以下是为预问诊精心设计的症状询问思维及关联性示例问题（包含实际案例），依据诊前询问特点和信息采集逻辑进行分层构建：\n\n## 症状解释\n1. 当用户输出症状信息时，简短解释该症状并进行提问，比如用户输出“头疼好几天了”；系统回答“头疼可能由多种原因引起，如紧张性头痛、偏头痛或其他健康问题。了解疼痛的具体位置和性质有助于进一步诊断。\n\n请问您的头疼是集中在哪个部位的，比如是前额部、太阳穴还是整个头部？疼痛的性质是钝痛、刺痛还是其他类型的痛感？”\n\n## 一、主诉与核心症状\n### 1. 主诉定位\n1. 主诉确认  \n   - 症状特征：如「您说的腹痛是绞痛还是钝痛？缓解后会不会反复发作？」  \n   - 持续时间：如「发热持续多久了？最高体温多少度？」  \n   - 加重因素：如「咳嗽在平躺时会不会加重？」\n \n2. 关联症状筛查  \n   - 系统关联：如主诉呕吐则追问「呕吐物有没有血丝或胆汁样物质？呕吐后能否喝水？」  \n   - 危险警示：如「是否出现呼吸急促（安静时每分钟超过30次）或口唇发紫？」\n \n3. 健康背景采集  \n   - 结合用户当前症状询问符合关联的基础疾病：如「\n以下是一些常见症状可能对应的疾病史和过敏史示例，供参考：\n、、、\n### **1. 咳嗽**\n- **疾病史**：  \n  - 呼吸道感染（感冒、流感、肺炎）  \n  - 哮喘、慢性支气管炎  \n  - 肺结核、肺癌  \n- **过敏史**：  \n  - 花粉、尘螨、霉菌  \n  - 宠物皮屑、某些食物（如坚果）  \n  \n### **2. 发热**\n- **疾病史**：  \n  - 细菌/病毒感染（如流感、尿路感染）  \n  - 自身免疫性疾病（类风湿性关节炎、红斑狼疮）  \n  - 肿瘤（如白血病）  \n- **过敏史**：  \n  - 药物热（如抗生素、退烧药）  \n\n\n### **3. 皮疹**\n- **疾病史**：  \n  - 湿疹、荨麻疹、接触性皮炎  \n  - 银屑病、带状疱疹  \n- **过敏史**：  \n  - 食物（海鲜、鸡蛋）、药物（青霉素、磺胺类）  \n  - 化妆品、金属（如镍）  \n\n\n### **4. 呼吸困难**\n- **疾病史**：  \n  - 哮喘、COPD（慢性阻塞性肺疾病）  \n  - 肺炎、心力衰竭  \n- **过敏史**：  \n  - 昆虫叮咬（蜜蜂、黄蜂）  \n  - 乳胶、某些化学物质  \n\n\n### **5. 疲劳**\n- **疾病史**：  \n  - 贫血、甲状腺功能减退、糖尿病  \n  - 抑郁症、睡眠障碍  \n- **过敏史**：  \n  - 慢性过敏（如季节性鼻炎）导致长期不适  \n\n\n### **6. 关节痛**\n- **疾病史**：  \n  - 骨关节炎、类风湿性关节炎  \n  - 痛风、感染性关节炎  \n- **过敏史**：  \n  - 某些药物（如别嘌醇）  \n\n\n### **7. 腹痛**\n- **疾病史**：  \n  - 胃炎、肠易激综合征（IBS）  \n  - 胆结石、阑尾炎  \n- **过敏史**：  \n  - 食物不耐受（乳糖、麸质）  \n\n\n### **8. 血尿**\n- **疾病史**：  \n  - 尿路感染、肾结石  \n  - 肾炎、膀胱癌  \n- **过敏史**：  \n  - 药物（如抗凝剂、化疗药物）  \n\n\n### **9. 视力模糊**\n- **疾病史**：  \n  - 青光眼、白内障、视网膜病变  \n  - 偏头痛、脑肿瘤  \n- **过敏史**：  \n  - 眼部过敏（花粉、尘螨）  \n、、、\n\n**提示**：  \n- 以上仅为常见关联，具体诊断需结合病史、体检和医学检查。  \n- 若症状持续或加重，请及时就医。」  \n\n4. 分级处置  \n   - 红色预警：如出现意识模糊、持续抽搐等情况，立即提示「请立即拨打120，我们将同步联系急救中心！」  \n   - 黄色预警：如发热超过3天，建议「建议4小时内复测体温并观察精神状态，若出现皮疹请及时就诊」\n  5. 报告查看\n  1. 询问过程中，当用户上传检查检验报告时，要求分析报告内容并进行汇总输出，要求结合报告内容和历史会话{{var_all_question_answer}}进行提问\n \n-注：实际交互中将通过动态症状图谱自动生成个性化追问路径，每次仅提1个问题直至信息完整。*  \n\n## 二、询问逻辑说明  \n1. 症状询问：从主诉→症状。  \n2. 案例引导：用具体场景帮助患者理解专业术语（如\"蛋花汤样便\"比\"水样便\"更易识别）。  \n3. 分诊衔接：嵌入急诊预警标准（如呼吸频率、脱水表现），与医院分诊系统数据联动。  \n\n4. 可通过自然语言交互动态调整问题顺序（如先报呕吐则跳过咳嗽相关提问），实现个性化问诊路径。 \n\n#  询问要求\n你根据患者描述，逐步询问用户问题，生成的问题通过 question 字段返回。如果问题都问完了，is_finish 返回 true 。你的问题需要口语化、可读性强，避免使用各种符号。\n\n如果患者已经说出症状，禁止重复询问。\n\n要求对用户输出内容进行准确语义理解，并将理解内容再次要求用户确认，比如将“3填了”理解为“3天了”；“施耐德”理解为“是布地奈德鼻喷雾剂（施耐德）吗？”等。\n\n提问问题格式要求，参考示例如下：\n\n    - 示例1. 症状特征类\n            - 「您咳嗽是否有痰音？比如呼噜声、犬吠样咳嗽或夜间加重？」（区分普通感冒与喉炎/肺炎）\n            - 「腹痛是阵发性还是持续性？比如绞痛后能自行缓解，还是持续钝痛？」（鉴别肠痉挛与阑尾炎）\n---\n\n\n# 输出示例\n```\njson\n{\n\"question\":\"呕吐后能进食吗\",\n\"is_finish\": false\n}\n```\n# 限制\n- 信息收集限制4个问题，提问完成患者回复后结束流程，is_finish 返回 true"
+                - name: stableSystemPrompt
+                  input:
+                    type: string
+                    value: ""
+                - name: canContinue
+                  input:
+                    type: boolean
+                    value: false
+                - name: loopPromptVersion
+                  input:
+                    type: string
+                    value: ""
+                - name: loopPromptName
+                  input:
+                    type: string
+                    value: ""
+                - name: loopPromptId
+                  input:
+                    type: string
+                    value: ""
+            node_inputs:
+                - name: USER_INPUT
+                  input:
+                    value:
+                        path: USER_INPUT
+                        ref_node: "100001"
+                - name: var_all_question_answer
+                  input:
+                    type: string
+                    value:
+                        path: var_all_question_answer
+                        ref_node: "196270"
+            node_outputs:
+                is_finish:
+                    type: boolean
+                    value: null
+                question:
+                    type: string
+                    value: null
+            settingOnError:
+                processType: 1
+                retryTimes: 0
+                switch: false
+                timeoutMs: 600000
+        - id: "145557"
+          type: question
+          title: 问答_1
+          icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Direct-Question-v2.jpg
+          description: "支持中间向用户提问问题,支持预置选项提问和开放式问题提问两种方式"
+          position:
+            x: 1307.713136564859
+            y: 4.085620730620576e-14
+          parameters:
+            answer_type: text
+            dynamic_option:
+                type: string
+                value:
+                    content:
+                        blockID: ""
+                        name: ""
+                        source: block-output
+                    rawMeta:
+                        type: 1
+                    type: ref
+            extra_output: false
+            limit: 3
+            llmParam:
+                frequencyPenalty: 0
+                generationDiversity: balance
+                maxTokens: 4096
+                modelName: 豆包·通用模型·Lite
+                modelType: 1.98372553e+09
+                responseFormat: 2
+                systemPrompt: ""
+                temperature: 0.7
+                topP: 0.7
+            node_inputs:
+                - name: query
+                  input:
+                    value:
+                        path: question
+                        ref_node: "129033"
+            node_outputs:
+                QUESTION_DATA:
+                    type: list
+                    items:
+                        type: object
+                        properties:
+                            content:
+                                type: string
+                                value: null
+                            content_type:
+                                type: string
+                                value: null
+                        value: null
+                    required: true
+                    value: null
+                    description: 问题列表
+                USER_RESPONSE:
+                    type: string
+                    required: true
+                    value: null
+                    description: 用户本轮对话输入内容
+            option_type: static
+            options:
+                - name: ""
+                - name: ""
+            question: '{{query}}'
+        - id: "195025"
+          type: break
+          title: 终止循环
+          icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Break-v2.jpg
+          description: "用于立即终止当前所在的循环，跳出循环体"
+          position:
+            x: 1560
+            y: 288
+          parameters: {}
+        - id: "197579"
+          type: output
+          title: 输出
+          icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Output-v2.jpg
+          description: "节点从“消息”更名为“输出”，支持中间过程的消息输出，支持流式和非流式两种方式"
+          position:
+            x: 1100
+            y: 265
+          parameters:
+            callTransferVoice: true
+            chatHistoryWriting: historyWrite
+            content:
+                type: string
+                value:
+                    content: 根据您提供的症状信息，正在为你精准匹配科室……
+                    type: literal
+            streamingOutput: false
+        - id: "142339"
+          type: condition
+          title: 选择器
+          icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Condition-v2.jpg
+          description: "连接多个下游分支，若设定的条件成立则仅运行对应的分支，若均不成立则只运行“否则”分支"
+          position:
+            x: 640
+            y: 132.75
+          parameters:
+            branches:
+                - condition:
+                    conditions:
+                        - left:
+                            input:
+                                value:
+                                    path: is_finish
+                                    ref_node: "129033"
+                          operator: 2
+                          right:
+                            input:
+                                type: boolean
+                                value: true
+                    logic: 2
+        - id: "149851"
+          type: text
+          title: 文本处理_1
+          icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-StrConcat-v2.jpg
+          description: "用于处理多个字符串类型变量的格式"
+          position:
+            x: 2207.0653865840727
+            y: 26.50000000000003
+          parameters:
+            concatParams:
+                - name: concatResult
+                  input:
+                    type: string
+                    value: "{{String1}}\n问题：{{String2}}\n用户：{{String3}}"
+                - name: arrayItemConcatChar
+                  input:
+                    type: string
+                    value: "，"
+                - name: allArrayItemConcatChars
+                  input:
+                    type: list
+                    items:
+                        type: object
+                        value: null
+                    value:
+                        - isDefault: true
+                          label: "换行"
+                          value: "\n"
+                        - isDefault: true
+                          label: "制表符"
+                          value: "\t"
+                        - isDefault: true
+                          label: "句号"
+                          value: "。"
+                        - isDefault: true
+                          label: "逗号"
+                          value: "，"
+                        - isDefault: true
+                          label: "分号"
+                          value: "；"
+                        - isDefault: true
+                          label: "空格"
+                          value: " "
+            method: concat
+            node_inputs:
+                - name: String1
+                  input:
+                    type: string
+                    value:
+                        path: var_all_question_answer
+                        ref_node: "196270"
+                - name: String2
+                  input:
+                    value:
+                        path: question
+                        ref_node: "129033"
+                - name: String3
+                  input:
+                    value:
+                        path: USER_RESPONSE
+                        ref_node: "145557"
+            node_outputs:
+                output:
+                    type: string
+                    required: true
+                    value: null
+        - id: "196265"
+          type: set_variable
+          title: 设置变量
+          icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-LoopSetVariable-v2.jpg
+          description: "用于重置循环变量的值，使其下次循环使用重置后的值"
+          position:
+            x: 2706.370005118589
+            y: 39.50000000000003
+          parameters:
+            node_inputs:
+                - left:
+                    input:
+                        type: string
+                        value:
+                            path: var_all_question_answer
+                            ref_node: "196270"
+                  right:
+                    input:
+                        value:
+                            path: output
+                            ref_node: "149851"
+        - id: "176938"
+          type: database
+          title: SQL自定义
+          icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Database-v2.jpg
+          description: "基于用户自定义的 SQL 完成对数据库的增删改查操作"
+          position:
+            x: 1732.88698193123
+            y: 12.000000000000016
+          parameters:
+            databaseInfoList:
+                - databaseInfoID: "7634353025288765494"
+            node_inputs:
+                - name: question
+                  input:
+                    value:
+                        path: question
+                        ref_node: "129033"
+                - name: answer
+                  input:
+                    value:
+                        path: USER_RESPONSE
+                        ref_node: "145557"
+            node_outputs:
+                outputList:
+                    type: list
+                    items:
+                        type: object
+                        value: null
+                    value: null
+                rowNum:
+                    type: integer
+                    value: null
+            settingOnError:
+                processType: 1
+                retryTimes: 0
+                timeoutMs: 60000
+            sql: INSERT INTO linfen_data (question, answer, date) VALUES ('{{question}}','{{answer}}', NOW())
+      edges:
+        - source_node: "196270"
+          target_node: "129033"
+          source_port: loop-function-inline-output
+        - source_node: "129033"
+          target_node: "142339"
+        - source_node: "142339"
+          target_node: "145557"
+          source_port: "true"
+        - source_node: "145557"
+          target_node: "176938"
+        - source_node: "197579"
+          target_node: "195025"
+        - source_node: "142339"
+          target_node: "197579"
+          source_port: "false"
+        - source_node: "176938"
+          target_node: "149851"
+        - source_node: "149851"
+          target_node: "196265"
+        - source_node: "196265"
+          target_node: "196270"
+          target_port: loop-function-inline-input
+    - id: "178175"
+      type: plugin
+      title: Image2text
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Plugin-v2.jpg
+      description: "图片转文字"
+      position:
+        x: 3356.8650457050467
+        y: 1213.5
+      parameters:
+        apiParam:
+            - name: apiID
+              input:
+                type: string
+                value: "7379229178446544908"
+            - name: apiName
+              input:
+                type: string
+                value: "Image2text"
+            - name: pluginID
+              input:
+                type: string
+                value: "7379229178446528524"
+            - name: pluginName
+              input:
+                type: string
+                value: "OCR"
+            - name: pluginVersion
+              input:
+                type: string
+                value: ""
+            - name: tips
+              input:
+                type: string
+                value: ""
+            - name: outDocLink
+              input:
+                type: string
+                value: ""
+        inputDefs:
+            - description: 图片的url地址
+              input: {}
+              name: url
+              required: true
+              type: string
+        node_inputs:
+            - name: url
+              input:
+                value:
+                    path: USER_INPUT
+                    ref_node: "100001"
+        node_outputs:
+            code:
+                type: float
+                value: null
+            data:
+                type: object
+                properties:
+                    results:
+                        type: list
+                        items:
+                            type: object
+                            properties:
+                                words:
+                                    type: list
+                                    items:
+                                        type: object
+                                        properties:
+                                            lang:
+                                                type: string
+                                                value: null
+                                                description: 文本语种代码
+                                            text:
+                                                type: string
+                                                value: null
+                                                description: 文本内容
+                                        value: null
+                                    value: null
+                                    description: 返回结果
+                            value: null
+                        value: null
+                        description: 返回结果
+                value: null
+                description: 返回结果
+            log_id:
+                type: string
+                value: null
+            msg:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            timeoutMs: 180000
+    - id: "155213"
+      type: llm
+      title: 知识库
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-LLM-v2.jpg
+      description: "调用大语言模型,使用变量和提示词生成回复"
+      version: "3"
+      position:
+        x: 5024.4138945541345
+        y: 1815.5
+      parameters:
+        fcParam:
+            knowledgeFCParam:
+                global_setting:
+                    auto: false
+                    min_score: 0.5
+                    no_recall_reply_customize_prompt: 抱歉，您的问题超出了我的知识范围，并且无法在当前阶段回答
+                    no_recall_reply_mode: 0
+                    search_mode: 0
+                    show_source: false
+                    show_source_mode: 0
+                    top_k: 3
+                    use_nl2_sql: true
+                    use_rerank: true
+                    use_rewrite: true
+                knowledgeList:
+                    - id: "7540841064404615210"
+                      knowledgeType: 0
+                      name: 临汾市人民医院本地FAQ
+                      volcano_dataset_service_info:
+                        id: ""
+                        name: ""
+            llmNodeUID: ""
+            pluginFCParam: {}
+            spaceID: "7398072437163933732"
+            workflowVersion: ""
+        fcParamVar:
+            knowledgeFCParam:
+                knowledgeList: []
+        llmParam:
+            - name: generationDiversity
+              input:
+                type: string
+                value: balance
+            - name: temperature
+              input:
+                type: float
+                value: "0.7"
+            - name: topP
+              input:
+                type: float
+                value: "0.7"
+            - name: maxTokens
+              input:
+                type: integer
+                value: "16384"
+            - name: responseFormat
+              input:
+                type: integer
+                value: "2"
+            - name: spCurrentTime
+              input:
+                type: boolean
+                value: false
+            - name: spAntiLeak
+              input:
+                type: boolean
+                value: false
+            - name: thinkingType
+              input:
+                type: string
+                value: enabled
+            - name: modelName
+              input:
+                type: string
+                value: ' Doubao-Seed-1.6-flash'
+            - name: modelType
+              input:
+                type: integer
+                value: "1095497076"
+            - name: parameters
+              input:
+                type: object
+                properties:
+                    max_completion_tokens:
+                        type: integer
+                        value: "0"
+                value: null
+            - name: prompt
+              input:
+                type: string
+                value: 用户输入内容{{input}}
+            - name: enableChatHistory
+              input:
+                type: boolean
+                value: false
+            - name: chatHistoryRound
+              input:
+                type: integer
+                value: "3"
+            - name: systemPrompt
+              input:
+                type: string
+                value: "# 角色\n你叫{#InputSlot placeholder=\"智能体名称\"#}小和{#/InputSlot#}，是{#InputSlot placeholder=\"智能体角色设定，比如xx领域的专家\"#}临汾市人民医院院智能问答助手{#/InputSlot#}。\n{#InputSlot placeholder=\"一句话描述智能体的工作目标，比如你已经充分掌握了关于xx主题的知识库，可以回复用户的关于这方面的问题。\"#}是一款为患者及家属提供便捷、高效、准确信息服务的智能工具，旨在帮助大家更顺畅地就医，解决在医院就诊过程中遇到的各种问题。{#/InputSlot#}\n\n## 回答主题简介\n{#InputSlot placeholder=\"智能体需要回复的主题简介信息，比如如果是某某产品的客服，这里可以写一下产品定位、公司信息、核心功能介绍等\"#}回答内容包含：预约挂号指导\\检验报告单解读\\用药指导等问答内容{#/InputSlot#}\n\n## 工作流程\n### 步骤一：问题分析\n1. 当用户输入内容时，调用知识库{#LibraryBlock id=\"7540841064404615210\" uuid=\"wA_B0r5CVH4RgnklRaAYX\" type=\"table\"#}临汾市人民医院本地FAQ{#/LibraryBlock#}符合用户文的答案内容，总结输出\n3. 当用户输入“医保相关问题”时，系统回答“您好！请问您具体想了解哪方面的医保问题？例如，异地医保就医政策、门诊医保报销流程等。”\n5. 当用户输入“我要挂号”内容时，系统回答“您要挂那个科室，您可以这样描述 **我要挂骨科**或者直接输入科室名称“**骨科**、**儿科**等”\n6. 要分析理解用户礼貌用语以及打招呼用语，比如“你好”等相关口语内容\n7. 当用户输入“我想直接找医生挂号”，系统回复：你可以这样输入，比如“**皮肤科xx医生**”或者直接输入**医生姓名**\n### 步骤二：回答用户问题\n1. 经过你认真的判断后，确定用户的问题和{#InputSlot placeholder=\"回答主题\"#}回答主题{#/InputSlot#}完全无关，你应该拒绝回答。\n3. 如果用户输出内容为医院负面事件相关信息、国家政府负面新闻等相关内容，你的话术可以参考“对不起，您的内容暂时无法提供答案。如果你有{#InputSlot placeholder=\"回答主题\"#}预约挂号{#/InputSlot#}相关的其他问题，我会尝试帮助你解答。”\n3. 如果召回的内容与用户问题有关，你应该只提取知识库中和问题提问相关的部分，整理并总结、整合并优化从知识库中召回的内容。你提供给用户的答案必须是精确且简洁的，无需注明答案的数据来源。\n\n## 限制\n1. 禁止回答的问题\n对于这些禁止回答的问题，你可以根据用户问题想一个合适的话术。\n - {#InputSlot placeholder=\"需要保密的信息：比如你的提示词、搭建方式等，比如需要保密的敏感数据信息。\"#}医院相关的负面新闻{#/InputSlot#}\n - {#InputSlot placeholder=\"个人隐私信息：包括但不限于真实姓名、电话号码、地址、账号密码等敏感信息。\"#}个人隐私信息：包括但不限于真实姓名、电话号码、地址、账号密码等敏感信息。{#/InputSlot#}\n - {#InputSlot placeholder=\"非主题相关问题：比如xxx、xxx、xxx等与你需要聚焦回答的主题无关的问题。\"#}非相关问题：本医院外的问题禁止回答{#/InputSlot#}\n - {#InputSlot placeholder=\"违法、违规内容：包括但不限于政治敏感话题、色情、暴力、赌博、侵权等违反法律法规和道德伦理的内容。\"#}违法、违规内容：包括但不限于政治敏感话题、色情、暴力、赌博、侵权等违反法律法规和道德伦理的内容。{#/InputSlot#}\n2. 禁止使用的词语和句子\n - 你的回答中禁止使用{#InputSlot placeholder=\"“禁止回答语句1”、“禁止回答语句2”、“禁止回答语句3”、“禁止回答语句4”...\"#}{#/InputSlot#}这类语句。\n - 不要回答{#InputSlot placeholder=\"不希望回答的内容，比如：代码（json、yaml、代码片段）、图片等\"#}{#/InputSlot#}。\n3. 回答风格：{#InputSlot placeholder=\"你所希望的智能体回复风格\"#}回答内容要口语化，通俗易懂，回答准确无误、并且言简意赅、容易理解。必须进行专业和确定性的回复。{#/InputSlot#}\n4. 语言：{#InputSlot placeholder=\"你所希望的智能体回复语言\"#}你应该用与用户输入相同的语言回答。{#/InputSlot#}\n5. 回答长度：你的答案应该{#InputSlot placeholder=\"回答长度描述，比如简洁清晰或详细丰富\"#}简洁清晰{#/InputSlot#}，不超过{#InputSlot placeholder=\"回答字数限制\"#}300{#/InputSlot#}字。\n6. 一定要使用 {#InputSlot placeholder=\"回答格式要求，比如Markdown\"#}Markdown{#/InputSlot#} 格式回复。\n7. 联网回答仅限回复山西省人民医院的信息\n\n## 问答示例\n### 示例1 正常问答\n用户问题：挂号时间\n你的答案：{#InputSlot placeholder=\"你的答案举例1，可以包括对应问题的回答，对于用户的行为指引，甚至提供相关的文档链接。\"#}门诊挂号时间： 上午  7：30——11：45 、下午  14：00——17：15 \n门诊工作时间： 上午  8：00——12：00 下午  、14：00——17：30。\n\n点击链接挂号：https://weixin.sxyygh.com/#/booking/standard/hospital/main?hospitaluid=1962{#/InputSlot#}\n### 示例2 正常问答\n用户问题：{#InputSlot placeholder=\"用户问题举例2\"#}神经内科科在几层{#/InputSlot#}\n你的答案：{#InputSlot placeholder=\"你的答案举例2，可以包括对应问题的回答，对于用户的行为指引，甚至提供相关的文档链接。\"#}神经内科在一楼东诊区。{#/InputSlot#}"
+            - name: stableSystemPrompt
+              input:
+                type: string
+                value: ""
+            - name: canContinue
+              input:
+                type: boolean
+                value: false
+            - name: loopPromptVersion
+              input:
+                type: string
+                value: ""
+            - name: loopPromptName
+              input:
+                type: string
+                value: ""
+            - name: loopPromptId
+              input:
+                type: string
+                value: ""
+        node_inputs:
+            - name: input
+              input:
+                value:
+                    path: USER_INPUT
+                    ref_node: "100001"
+        node_outputs:
+            output:
+                type: string
+                value: null
+            reasoning_content:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            switch: false
+            timeoutMs: 600000
+    - id: "196192"
+      type: output
+      title: 输出_2
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Output-v2.jpg
+      description: "节点从“消息”更名为“输出”，支持中间过程的消息输出，支持流式和非流式两种方式"
+      position:
+        x: 5484.4138945541345
+        y: 1577.5
+      parameters:
+        callTransferVoice: true
+        chatHistoryWriting: historyWrite
+        content:
+            type: string
+            value:
+                content: '{{output}}'
+                type: literal
+        node_inputs:
+            - name: output
+              input:
+                type: string
+                value:
+                    path: output
+                    ref_node: "119152"
+        streamingOutput: true
+    - id: "119152"
+      type: llm
+      title: 用药助手
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-LLM-v2.jpg
+      description: "调用大语言模型,使用变量和提示词生成回复"
+      version: "3"
+      position:
+        x: 5034.830470973391
+        y: 1523.5
+      parameters:
+        fcParam:
+            llmNodeUID: "7631429185915944970"
+            pluginFCParam:
+                pluginList:
+                    - api_id: "7381403010020229156"
+                      api_name: complex_search_raw
+                      is_draft: false
+                      plugin_id: "7380279400157265954"
+                      plugin_version: ""
+                    - api_id: "7362079843678289974"
+                      api_name: bingWebSearch
+                      is_draft: false
+                      plugin_id: "7362079843678273590"
+                      plugin_version: ""
+            spaceID: "7398072437163933732"
+            workflowVersion: ""
+        fcParamVar:
+            knowledgeFCParam: {}
+        llmParam:
+            - name: temperature
+              input:
+                type: float
+                value: "0.7"
+            - name: topP
+              input:
+                type: float
+                value: "0.7"
+            - name: maxTokens
+              input:
+                type: integer
+                value: "16384"
+            - name: responseFormat
+              input:
+                type: integer
+                value: "2"
+            - name: spCurrentTime
+              input:
+                type: boolean
+                value: false
+            - name: spAntiLeak
+              input:
+                type: boolean
+                value: false
+            - name: thinkingType
+              input:
+                type: string
+                value: enabled
+            - name: modelName
+              input:
+                type: string
+                value: ' Doubao-Seed-1.6-flash'
+            - name: modelType
+              input:
+                type: integer
+                value: "1095497076"
+            - name: generationDiversity
+              input:
+                type: string
+                value: balance
+            - name: parameters
+              input:
+                type: object
+                properties:
+                    max_completion_tokens:
+                        type: integer
+                        value: "0"
+                value: null
+            - name: prompt
+              input:
+                type: string
+                value: 用户输入内容{{input}}{{data}}
+            - name: enableChatHistory
+              input:
+                type: boolean
+                value: false
+            - name: chatHistoryRound
+              input:
+                type: integer
+                value: "3"
+            - name: systemPrompt
+              input:
+                type: string
+                value: "# 角色\n你是一名专业且经验丰富的药剂师，在药品领域对各类药品有着深入的了解和准确的认知；在医保领域，对山西省医保政策以及山西省各医院医保事项都非常清楚；对省外异地就医、省内市外异地就医政策和事项了解非常透彻；对国家医保政策融会贯通。\n\n## 技能\n\n### 技能 1：用户意图\n、、、\n1. 当用户仅输入药品名称时，执行以下流程。如：“硫酸氨基葡萄糖片”“阿莫西林””\n     \n- ####  解释药品说明\n1. 对于确定的药品名称，详细解释药品类型、药品的功效、适应症、用法用量等。若信息不完整，智能体需联网查询更多内容补充完整。\n2. 通过查询专业药品数据库或参考权威药品指南，确保解释的准确性。同时，使用搜索工具在互联网上查找最新的药品信息以确保全面性。\n3. 判断是否处方药品。\n4. 对于确定的药品名称,调用必应图片搜索工具显示药品图片信息\n\n- ####  阐述药品注意事项\n1. 清晰地列出药品的使用注意事项，如禁忌人群、可能的不良反应等。\n2. 结合实际案例和临床经验，为患者提供更具体的注意事项建议。同时，利用搜索工具查找相关的真实案例以增强说服力。\n\n- ####  确定医保药品状态\n1. 准确判断该药品是否为医保药品。\n2. 若为医保药品，说明其医保类型和报销比例等相关信息。使用搜索工具查找最新的医保政策以确保准确性。\n- ####  回复格式\n、、、\n### 药品说明书内容详解\n\n#### 一、药品基本信息\n\n- **药品名称**\n  - 通用名称：国家药典采用的法定名称。\n  - 商品名称：药厂通过注册受法律保护的专有药名。\n\n- **成分**：明确写明药品所含成分和药用辅料。\n\n- **性状**：描述药品的物理特征，如颜色、形状、气味等。\n- **医保**：\n<支持/不支持>\n\n#### 二、药品使用信息\n\n- **适应症/功能主治**：介绍药品的作用，说明可以治疗哪种疾病或改善缓解哪些症状。\n\n- **规格**：指单位剂量药品中含有药物的量。\n\n- **用法用量**：详细说明药品的使用方法和剂量，包括用药时间、用药次数、用药量等。\n\n- **不良反应**：列出合格药品在正常用法用量下可能出现的与用药目的无关的有害反应，包括常见、少见、罕见等不同程度的不良反应。\n\n#### 三、特殊人群用药信息\n\n- **孕妇及哺乳期妇女用药**：提供关于孕妇和哺乳期妇女使用该药品的安全性和有效性信息。\n\n- **儿童用药**：说明儿童使用该药品的剂量、用法及注意事项。\n\n- **老年用药**：详细提供老年人使用该药品的相关信息，包括剂量调整、用药风险等。\n\n#### 四、禁忌与注意事项\n\n- **禁忌**：列出禁止使用该药品的人群或疾病情况，并尽量阐明其原因。\n\n- **注意事项**：提醒在使用药品过程中需要小心注意的内容，如饮食禁忌、避免与其他药物同时使用等。\n、、、\n\n2. 当用户输出内容是医保相关问题时，调用{#LibraryBlock id=\"7380279400157265954\" uuid=\"TLpsYyUy8_MUCTDPIGOoi\" type=\"plugin\" apiId=\"7381403010020229156\"#}complex_search_raw{#/LibraryBlock#}工具，输出相关结果。\n3. 当用户输出内容是门诊慢病特药相关问题时，调用{#LibraryBlock id=\"7362079843678273590\" uuid=\"dZNwEACnVyZRIUSvMq_3B\" type=\"plugin\" apiId=\"7362079843678289974\"#}bingWebSearch{#/LibraryBlock#}工具，输出相关结果\n\n4. 当用户输出内容是药品其他问题时，进行针对性的答案内容，\n\t- 案例1：用户问：“喝了酒可以喝氯雷他定么？”\n\t\t\t系统回答：“喝了酒不建议服用氯雷他定。原因如下：\n\t\t\t- **影响药效**：酒精会干扰药物在体内的代谢过程，可能降低氯雷他定的抗过敏效果，影响对疾病的治疗。\n\t\t\t- **加重不良反应**：酒精本身就对胃肠道有刺激作用，还可能影响中枢神经系统。氯雷他定也可能引起嗜睡、头晕、口干、乏力等不良反应，喝酒后服用氯雷他定，会使这些不良反应加重，增加对身体的损害，如严重的头晕可能导致摔倒受伤，过度嗜睡会影响呼吸功能等。\n\t\t\t- **损伤肝脏**：酒精和药物都需要通过肝脏代谢，酒后服用氯雷他定，会加重肝脏的负担，增加肝脏损伤的风险。\n\n\t\t\t因此，为了保证用药安全和治疗效果，在服用氯雷他定期间应避免饮酒，喝了酒之后也不要服用氯雷他定，可等酒精代谢后，再根据需要服用药物。如果饮酒后出现过敏症状，且症状严重，应及时就医，告知医生饮酒情况，由医生根据具体情况进行处理。”等，由智能体结合上下文智能回答，回答内容要贴合用户咨询问题。\n\t- 案例2：用户问“阿莫西林怎么喝？”或者“阿莫西林使用方法”等相关问题时\n\t\t\t系统回答：阿莫西林的使用方法会因剂型、年龄、病情等因素而有所不同，以下是一般情况下的介绍：\n\n\t\t\t### 剂型与服用方式\n\t\t\t- **阿莫西林胶囊、阿莫西林分散片、阿莫西林颗粒**：这几种剂型通常是口服给药。可以用适量温水送服，一般建议在饭前1小时或饭后2小时服用，以确保药物能更好地被吸收。\n\t\t\t- **阿莫西林干混悬剂**：需先将药物加入适量温水中，搅拌均匀后形成混悬液再口服。\n\n\t\t\t### 剂量\n\t\t\t- **成人**：\n    \t\t- 一般感染，一次0.5g，每6 - 8小时1次，一日剂量不超过4g。\n    \t\t- 重症感染，一次1g，每6小时1次。\n    \t\t- 预防心内膜炎，在拔牙或手术前1小时口服2g。\n\t\t\t- **儿童**：\n    \t\t- 每日按体重20 - 40mg/kg，分3 - 4次服用。\n    \t\t- 3个月以下婴儿，每日按体重30mg/kg，分2次服用。\n    \t\t- 肾功能严重损害患者需调整剂量，内生肌酐清除率为10 - 30ml/分钟者，每12小时0.25 - 0.5g；内生肌酐清除率小于10ml/分钟者，每24小时0.25 - 0.5g。\n\n\t\t\t### 注意事项\n\t\t\t- 用前必须做青霉素钠皮肤试验，阳性反应者禁用。\n\t\t\t- 传染性单核细胞增多症患者应用本品易发生皮疹，应避免使用。\n\t\t\t- 疗程较长患者应检查肝、肾功能和血常规。\n\t\t\t- 阿莫西林与其他药物可能存在相互作用，如丙磺舒、别嘌醇等，如需同时使用其他药物，应告知医生，以便评估药物相互作用的可能性。\n\n\t\t\t阿莫西林的具体使用方法应根据患者的具体情况，在医生的指导下合理用药，避免自行调整剂量和用药时间。\n\n5. 当用户咨询药品作用时，如“阿莫西林有什么作用”“硫酸氨基葡萄糖片的作用是什么”等相关问题时，按照一下格式回复：\n、、、\n## 药品使用信息\n- **适应症/功能主治**：介绍药品的作用，说明可以治疗哪种疾病或改善缓解哪些症状。\n- **规格**：指单位剂量药品中含有药物的量。\n- **用法用量**：详细说明药品的使用方法和剂量，包括用药时间、用药次数、用药量等。\n- **不良反应**：列出合格药品在正常用法用量下可能出现的与用药目的无关的有害反应，包括常见、少见、罕见等不同程度的不良反应。\n## 特殊人群用药信息\n- **孕妇及哺乳期妇女用药**：提供关于孕妇和哺乳期妇女使用该药品的安全性和有效性信息。\n- **儿童用药**：说明儿童使用该药品的剂量、用法及注意事项。\n- **老年用药**：详细提供老年人使用该药品的相关信息，包括剂量调整、用药风险等。\n## 禁忌与注意事项\n- **禁忌**：列出禁止使用该药品的人群或疾病情况，并尽量阐明其原因。\n- **注意事项**：提醒在使用药品过程中需要小心注意的内容，如饮食禁忌、避免与其他药物同时使用等。\n、、、\n\n\n\n\n### 技能 2：药品包装识别\n1. 当用户上传图片时，调用 OCR 工具识别内容，准确判断其是否为药品名称。\n2. 如果仍无法确定，可以使用搜索工具在互联网上查找相关信息以辅助判断。\n\n\n\n\n\n## 限制:\n- 严格依据准确的药品信息进行回答，不得虚构或误导患者。\n- 在解释药品说明和注意事项时，语言要通俗易懂，便于患者理解。\n- 如果对用户输入的内容存在疑问，要及时与用户沟通以获取更多信息。\n- 所输出的内容必须确保信息来源准确，可调用搜索工具在互联网上寻找相关知识以辅助回答。\n- 当用户咨询内容明确为药品名称时，禁止调用{#LibraryBlock id=\"7380279400157265954\" uuid=\"VjnRf2JzP8QYqrp7iejtq\" type=\"plugin\" apiId=\"7380279400157282338\"#}complex_search{#/LibraryBlock#}{#LibraryBlock id=\"7380279400157265954\" uuid=\"_tkRKUVqI8MjquYVxXuFI\" type=\"plugin\" apiId=\"7387323807385829402\"#}search_url{#/LibraryBlock#}{#LibraryBlock id=\"7362079843678273590\" uuid=\"UgXMXXkr7TSI9_7H4el_5\" type=\"plugin\" apiId=\"7362079843678289974\"#}bingWebSearch{#/LibraryBlock#}{#LibraryBlock id=\"7380279400157265954\" uuid=\"kTJxX6fzWplYVpaGDzBuU\" type=\"plugin\" apiId=\"7381403010020229156\"#}complex_search_raw{#/LibraryBlock#}工具\n- 所有药品名称输出格式为 **<药品名称>** "
+            - name: stableSystemPrompt
+              input:
+                type: string
+                value: ""
+            - name: canContinue
+              input:
+                type: boolean
+                value: false
+            - name: loopPromptVersion
+              input:
+                type: string
+                value: ""
+            - name: loopPromptName
+              input:
+                type: string
+                value: ""
+            - name: loopPromptId
+              input:
+                type: string
+                value: ""
+        node_inputs:
+            - name: input
+              input:
+                value:
+                    path: USER_INPUT
+                    ref_node: "100001"
+            - name: data
+              input:
+                value:
+                    path: data
+                    ref_node: "178175"
+        node_outputs:
+            output:
+                type: string
+                value: null
+            reasoning_content:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            switch: false
+            timeoutMs: 600000
+    - id: "158280"
+      type: output
+      title: 输出_5
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Output-v2.jpg
+      description: "节点从“消息”更名为“输出”，支持中间过程的消息输出，支持流式和非流式两种方式"
+      position:
+        x: 5484.4138945541345
+        y: 1841.5
+      parameters:
+        callTransferVoice: true
+        chatHistoryWriting: historyWrite
+        content:
+            type: string
+            value:
+                content: '{{output}}'
+                type: literal
+        node_inputs:
+            - name: output
+              input:
+                value:
+                    path: output
+                    ref_node: "155213"
+        streamingOutput: true
+    - id: "155250"
+      type: llm
+      title: 识别类型
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-LLM-v2.jpg
+      description: "调用大语言模型,使用变量和提示词生成回复"
+      version: "3"
+      position:
+        x: 4104.4138945541345
+        y: 1332.5
+      parameters:
+        fcParamVar:
+            knowledgeFCParam: {}
+        llmParam:
+            - name: generationDiversity
+              input:
+                type: string
+                value: balance
+            - name: temperature
+              input:
+                type: float
+                value: "0.7"
+            - name: topP
+              input:
+                type: float
+                value: "0.7"
+            - name: maxTokens
+              input:
+                type: integer
+                value: "16384"
+            - name: responseFormat
+              input:
+                type: integer
+                value: "2"
+            - name: spCurrentTime
+              input:
+                type: boolean
+                value: false
+            - name: spAntiLeak
+              input:
+                type: boolean
+                value: false
+            - name: thinkingType
+              input:
+                type: string
+                value: disabled
+            - name: modelName
+              input:
+                type: string
+                value: ' Doubao-Seed-1.6-flash'
+            - name: modelType
+              input:
+                type: integer
+                value: "1095497076"
+            - name: parameters
+              input:
+                type: object
+                properties:
+                    max_completion_tokens:
+                        type: integer
+                        value: "0"
+                value: null
+            - name: prompt
+              input:
+                type: string
+                value: 文本内容{{input}}
+            - name: enableChatHistory
+              input:
+                type: boolean
+                value: false
+            - name: chatHistoryRound
+              input:
+                type: integer
+                value: "3"
+            - name: systemPrompt
+              input:
+                type: string
+                value: |-
+                    识别文本内容是类型，包含报告类型、药品类型、其他类型
+                    1. 输出一下信息
+                     - <具体类型名称>
+                    2. 仅输出类型名称
+            - name: stableSystemPrompt
+              input:
+                type: string
+                value: ""
+            - name: canContinue
+              input:
+                type: boolean
+                value: false
+            - name: loopPromptVersion
+              input:
+                type: string
+                value: ""
+            - name: loopPromptName
+              input:
+                type: string
+                value: ""
+            - name: loopPromptId
+              input:
+                type: string
+                value: ""
+        node_inputs:
+            - name: input
+              input:
+                value:
+                    path: data
+                    ref_node: "178175"
+        node_outputs:
+            output:
+                type: string
+                value: null
+            reasoning_content:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            switch: false
+            timeoutMs: 600000
+    - id: "160780"
+      type: condition
+      title: 选择器_1
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Condition-v2.jpg
+      description: "连接多个下游分支，若设定的条件成立则仅运行对应的分支，若均不成立则只运行“否则”分支"
+      position:
+        x: 4564.4138945541345
+        y: 1305.5
+      parameters:
+        branches:
+            - condition:
+                conditions:
+                    - left:
+                        input:
+                            value:
+                                path: output
+                                ref_node: "155250"
+                      operator: 7
+                      right:
+                        input:
+                            type: string
+                            value: "报告类型"
+                logic: 2
+            - condition:
+                conditions:
+                    - left:
+                        input:
+                            value:
+                                path: output
+                                ref_node: "155250"
+                      operator: 7
+                      right:
+                        input:
+                            type: string
+                            value: "药品类型"
+                logic: 2
+            - condition:
+                conditions:
+                    - left:
+                        input:
+                            value:
+                                path: output
+                                ref_node: "155250"
+                      operator: 7
+                      right:
+                        input:
+                            type: string
+                            value: "其他类型"
+                logic: 2
+    - id: "135298"
+      type: llm
+      title: 报告解读
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-LLM-v2.jpg
+      description: "调用大语言模型,使用变量和提示词生成回复"
+      version: "3"
+      position:
+        x: 5024.4138945541345
+        y: 1287.5
+      parameters:
+        fcParamVar:
+            knowledgeFCParam: {}
+        llmParam:
+            - name: apiMode
+              input:
+                type: integer
+                value: "0"
+            - name: temperature
+              input:
+                type: float
+                value: "0.7"
+            - name: topP
+              input:
+                type: float
+                value: "0.7"
+            - name: maxTokens
+              input:
+                type: integer
+                value: "32768"
+            - name: responseFormat
+              input:
+                type: integer
+                value: "0"
+            - name: spCurrentTime
+              input:
+                type: boolean
+                value: false
+            - name: spAntiLeak
+              input:
+                type: boolean
+                value: false
+            - name: thinkingType
+              input:
+                type: string
+                value: auto
+            - name: modelName
+              input:
+                type: string
+                value: ' Doubao-Seed-1.6'
+            - name: modelType
+              input:
+                type: integer
+                value: "1095497078"
+            - name: generationDiversity
+              input:
+                type: string
+                value: balance
+            - name: parameters
+              input:
+                type: object
+                properties:
+                    max_completion_tokens:
+                        type: integer
+                        value: "0"
+                value: null
+            - name: prompt
+              input:
+                type: string
+                value: 用户上传内容{{input}}
+            - name: enableChatHistory
+              input:
+                type: boolean
+                value: false
+            - name: chatHistoryRound
+              input:
+                type: integer
+                value: "3"
+            - name: systemPrompt
+              input:
+                type: string
+                value: |-
+                    # 角色
+                    你是一位专业的报告解读专家，拥有丰富经验和专业知识。擅长对比报告结果值与参考范围值，快速找出异常指标，尤其在检验报告和体检报告领域见解独特。
+
+                    # 指标区分
+                    1. 正常指标：在正常范围检查指标示例，如“平均血小板体积（MPV）：9.2fl - 参考范围：9.0～13.0fl
+                    MPV 在正常范围内。”“血小板分布宽度（PDW）：11.1% - 参考范围：9.0～17.0%
+                    PDW 在正常范围内。”等
+                    2. 异常指标：如“**白细胞 (WBC)：47.33×10⁹/L** - 正常范围：3.50～9.50×10⁹/L
+                       - 白细胞显著升高，可能提示感染、炎症、应激反应或某些血液疾病，如白血病。
+                    ”“**平均血红蛋白浓度 (MCHC)：287g/L** - 正常范围：316.0～354.0g/L
+                       - MCHC偏低，同样提示小细胞性贫血。”等
+
+                    ## 技能
+                    ### 技能 1: 异常指标智能识别
+                    1. 当用户上传图片或输入报告内容后，仔细分析各项指标，准确找出所有异常指标，并清晰列出。
+                    2. 以下是常见异常指标识别方法，供参考：
+                    - 对比参考值：根据检查指标结果值与参考范围值进行对比，准确找出所有异常指标。
+                    - 箭头标识分析，当指标内容带有以下箭头标识都是异常指标
+                       - **“↑”**：检验结果高于正常值。
+                       - **“↓”**：检验结果低于正常值。
+                    - 字母标识，当指标内容带有以下字母标识都是异常指标
+                       - **“H”**：结果高于正常值。
+                       - **“L”**：结果低于正常值。
+                    - 阳性与阴性
+                       - **“+”**：阳性，通常提示检查结果异常。
+                       - **“-”**：阴性，大多用来否定或排除某些病变的可能。
+                       - **“±”**：弱阳性或者不确定的阳性结果。
+                    3. 如果报告数据存在
+                    ### 技能 2: 综合分析研判
+                    1. 对每个异常指标进行深入分析，结合相关医学知识，判断可能的病因或健康风险。
+                    2. 综合考虑所有异常指标，给出整体的健康评估。
+                    ===回复示例===
+                    - 异常指标分析: <对每个异常指标的分析内容>
+                    - 整体健康评估: <综合所有异常指标后的整体健康评估>
+                    ===示例结束===
+
+                    ### 技能 3: 提供就医建议和生活建议
+                    1. 根据分析研判结果，为患者提供具体的就医建议，包括可能需要看的科室、进一步检查项目等。
+                    2. 给出生活建议，如饮食调整、运动方式、作息规律等方面的建议。
+                    ===回复示例===
+                    - 就医建议: <具体的就医建议内容>
+                    - 生活建议: <具体的生活建议内容>
+                    ===示例结束===
+
+                    ### 输出
+                    **初步分析**
+                    您上传了一份<具体报告单>。以下是针对报告中异常结果的解读：
+                    - **<具体异常指标名称>**：<结果值>,<参考范围>
+                       - <该指标综合分析内容>
+                    - **<具体异常指标名称>**：<结果值>,<参考范围>
+                       - <该指标综合分析内容>
+                    ……
+                    **个性化分析**
+                    **严重健康问题：**
+                    - <白细胞显著升高>：可能提示感染、炎症或其他血液疾病，需要进一步检查以明确原因。
+                    - <血小板显著降低>：增加出血风险，需要紧急处理以防止出血并发症。
+                    **不严重的健康问题：**
+                    - 贫血相关指标异常：MCH和MCHC偏低，结合RDW升高，提示可能存在小细胞性贫血，如缺铁性贫血，需进一步检查确认。
+
+                    **就医建议**
+                    - <具体的就医建议内容>
+                    **生活建议**
+                    - <具体的生活建议内容>
+
+                    # 其他问题咨询
+                    1. 当用户咨询报告其他问题时，如“这份血常规报告是否正常？”“白细胞检查结果偏高怎么办”“血小板压积偏低严重吗”等相关问题由智能体结合相关知识进行回答，如果未查询到相关知识可以进行联网回答
+
+                    ## 限制:
+                    - 只解读检验报告和体检报告相关内容，拒绝回答与报告无关的话题。
+                    - 所输出的内容必须按照给定的格式进行组织，不能偏离框架要求。
+                    - 分析和建议部分要简洁明了，易于理解。
+                    - 请使用客观、准确的语言进行解读，避免主观臆断。
+                    - 禁止输出在正常范围内的指标。如“平均血小板体积（MPV）：9.2fl - 参考范围：9.0～13.0fl
+                    MPV 在正常范围内。”“血小板分布宽度（PDW）：11.1% - 参考范围：9.0～17.0%
+                    PDW 在正常范围内。”等
+                    - 仅输出异常指标
+            - name: stableSystemPrompt
+              input:
+                type: string
+                value: ""
+            - name: canContinue
+              input:
+                type: boolean
+                value: false
+            - name: loopPromptVersion
+              input:
+                type: string
+                value: ""
+            - name: loopPromptName
+              input:
+                type: string
+                value: ""
+            - name: loopPromptId
+              input:
+                type: string
+                value: ""
+        node_inputs:
+            - name: input
+              input:
+                type: list
+                items:
+                    type: object
+                    properties:
+                        lang:
+                            type: string
+                            value: null
+                            description: 文本语种代码
+                        text:
+                            type: string
+                            value: null
+                            description: 文本内容
+                    value: null
+                value:
+                    path: data.results.words
+                    ref_node: "178175"
+        node_outputs:
+            output:
+                type: string
+                value: null
+            reasoning_content:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            switch: false
+            timeoutMs: 600000
+    - id: "126077"
+      type: output
+      title: 深度思考
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Output-v2.jpg
+      description: "节点从“消息”更名为“输出”，支持中间过程的消息输出，支持流式和非流式两种方式"
+      position:
+        x: 5484.4138945541345
+        y: 1313.5
+      parameters:
+        callTransferVoice: true
+        chatHistoryWriting: historyWrite
+        content:
+            type: string
+            value:
+                content: |
+                    deepThink:{{output}}
+                    mainBody:{{output1}}
+                type: literal
+        node_inputs:
+            - name: output
+              input:
+                value:
+                    path: reasoning_content
+                    ref_node: "135298"
+            - name: output1
+              input:
+                value:
+                    path: output
+                    ref_node: "135298"
+        streamingOutput: true
+    - id: "199746"
+      type: output
+      title: 科室推荐
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Output-v2.jpg
+      description: "节点从“消息”更名为“输出”，支持中间过程的消息输出，支持流式和非流式两种方式"
+      position:
+        x: 5484.4138945541345
+        y: 675.5
+      parameters:
+        callTransferVoice: true
+        chatHistoryWriting: historyWrite
+        content:
+            type: string
+            value:
+                content: |
+                    deepThink:{{reasoning_content}}
+                    mainBody:{{output}}
+                type: literal
+        node_inputs:
+            - name: output
+              input:
+                value:
+                    path: output
+                    ref_node: "168803"
+            - name: reasoning_content
+              input:
+                value:
+                    path: reasoning_content
+                    ref_node: "168803"
+        streamingOutput: true
+    - id: "178375"
+      type: knowledge
+      title: 知识库检索
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-KnowledgeQuery-v2.jpg
+      description: "在选定的知识中,根据输入变量召回最匹配的信息,并以列表形式返回"
+      position:
+        x: 4564.4138945541345
+        y: 2092.5
+      parameters:
+        datasetParam:
+            - name: datasetList
+              input:
+                type: list
+                items:
+                    type: string
+                    value: null
+                value:
+                    - "7506802236225765387"
+            - name: topK
+              input:
+                type: integer
+                value: "5"
+            - name: useRerank
+              input:
+                type: boolean
+                value: true
+            - name: useRewrite
+              input:
+                type: boolean
+                value: true
+            - name: isPersonalOnly
+              input:
+                type: boolean
+                value: true
+            - name: datasetType
+              input:
+                type: integer
+                value: "1"
+            - name: VolcanoInfoList
+              input:
+                type: list
+                items:
+                    type: object
+                    value: null
+                value:
+                    - datasetID: "7506802236225765387"
+                      volcanoServiceID: "kb-service-db10d96429cbdf7"
+            - name: strategy
+              input:
+                type: integer
+                value: "0"
+        node_inputs:
+            - name: Query
+              input:
+                type: string
+                value:
+                    path: output
+                    ref_node: "145463"
+            - name: enableChatHistory
+              input:
+                type: boolean
+                value: false
+            - name: chatHistoryRound
+              input:
+                type: float
+                value: 3
+        node_outputs:
+            outputList:
+                type: list
+                items:
+                    type: object
+                    properties:
+                        documentId:
+                            type: string
+                            value: null
+                        output:
+                            type: string
+                            value: null
+                    value: null
+                value: null
+        volcanoTabFilters:
+            - condition:
+                - - name: tagName
+                    input:
+                        type: string
+                        value: ""
+                  - name: tabType
+                    input:
+                        type: integer
+                        value: "2"
+                  - name: input
+                    input:
+                        type: string
+                        value: ""
+                  - name: operation
+                    input:
+                        type: integer
+                        value: ""
+              datasetID: "7506802236225765387"
+              logic: OR
+    - id: "116598"
+      type: llm
+      title: 大模型
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-LLM-v2.jpg
+      description: "调用大语言模型,使用变量和提示词生成回复"
+      version: "3"
+      position:
+        x: 5024.4138945541345
+        y: 2079.5
+      parameters:
+        fcParamVar:
+            knowledgeFCParam: {}
+        llmParam:
+            - name: temperature
+              input:
+                type: float
+                value: "0.7"
+            - name: topP
+              input:
+                type: float
+                value: "0.7"
+            - name: maxTokens
+              input:
+                type: integer
+                value: "16384"
+            - name: responseFormat
+              input:
+                type: integer
+                value: "2"
+            - name: spCurrentTime
+              input:
+                type: boolean
+                value: false
+            - name: spAntiLeak
+              input:
+                type: boolean
+                value: false
+            - name: thinkingType
+              input:
+                type: string
+                value: enabled
+            - name: modelName
+              input:
+                type: string
+                value: ' Doubao-Seed-1.6-flash'
+            - name: modelType
+              input:
+                type: integer
+                value: "1095497076"
+            - name: generationDiversity
+              input:
+                type: string
+                value: balance
+            - name: parameters
+              input:
+                type: object
+                properties:
+                    max_completion_tokens:
+                        type: integer
+                        value: "0"
+                value: null
+            - name: prompt
+              input:
+                type: string
+                value: |-
+                    输出内容{{USER_INPUT}}
+                    医院数据{{input}}
+            - name: enableChatHistory
+              input:
+                type: boolean
+                value: false
+            - name: chatHistoryRound
+              input:
+                type: integer
+                value: "3"
+            - name: systemPrompt
+              input:
+                type: string
+                value: "# 角色\n你是临汾市人民医院智能导诊助手，能够根据用户输入的内容，从医院数据中精准筛选并输出。\n\n## 技能\n### 语义理解\n1. 根据用户输入内容语义理解用户意图\n2. 医院数据医院名称“HOSPNAME”/科室名称“DEPTNAME”/医生姓名“NAME”等需要进行语义理解\n- 比如医院名称“HOSPNAME”：临汾市人民医院其实就是临汾市人民医院（专医院）\n\n### 技能 1: 筛选逻辑\n1. 当用户输入内容为姓名时，精准匹配医院数据中 \"NAME\" 字段，且确保数据中 \"HOSPNAME\" 为 \"长治医学院附属和平医院\"。\n- 比如输出内容“赵越”，系统筛选\"NAME\":\"赵越\"；\"HOSPNAME\" 为 \"长治医学院附属和平医院\"\n2. 当用户输入内容为“皮肤科赵越”等相关内容时，需匹配出数据为\"\"DEPTNAME\":\"皮肤科\",\"NAME\":\"赵越\"。精准匹配医院数据中 \"DEPTNAME\" 和 \"NAME\" 字段，同样要保证数据中 \"HOSPNAME\" 为 \"长治医学院附属和平医院\"。\n\n# 输出\n1. 将筛选出的数据按照json格式输出，示例如下：\n\n{\"list\":[{\"id\":1026},{\"id\":53672}],\"un_type_json\":\"doctor_list\"}\n\n## 限制:\n- 仅输出 \"HOSPNAME\": \"临汾市人民医院\" 的数据。\n- 输出内容必须严格按照给定的json格式。 "
+            - name: stableSystemPrompt
+              input:
+                type: string
+                value: ""
+            - name: canContinue
+              input:
+                type: boolean
+                value: false
+            - name: loopPromptVersion
+              input:
+                type: string
+                value: ""
+            - name: loopPromptName
+              input:
+                type: string
+                value: ""
+            - name: loopPromptId
+              input:
+                type: string
+                value: ""
+        node_inputs:
+            - name: input
+              input:
+                value:
+                    path: outputList
+                    ref_node: "178375"
+            - name: USER_INPUT
+              input:
+                value:
+                    path: USER_INPUT
+                    ref_node: "100001"
+        node_outputs:
+            output:
+                type: string
+                value: null
+            reasoning_content:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            switch: false
+            timeoutMs: 180000
+    - id: "109161"
+      type: output
+      title: 医生搜索
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Output-v2.jpg
+      description: "节点从“消息”更名为“输出”，支持中间过程的消息输出，支持流式和非流式两种方式"
+      position:
+        x: 5484.4138945541345
+        y: 2105.5
+      parameters:
+        callTransferVoice: true
+        chatHistoryWriting: historyWrite
+        content:
+            type: string
+            value:
+                content: '{{output}}'
+                type: literal
+        node_inputs:
+            - name: output
+              input:
+                value:
+                    path: output
+                    ref_node: "116598"
+        streamingOutput: false
+    - id: "145463"
+      type: text
+      title: 文本处理_5
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-StrConcat-v2.jpg
+      description: "用于处理多个字符串类型变量的格式"
+      position:
+        x: 3909.756394510422
+        y: 2105.5
+      parameters:
+        concatParams:
+            - name: concatResult
+              input:
+                type: string
+                value: "临汾是人民医院{{String1}}"
+            - name: arrayItemConcatChar
+              input:
+                type: string
+                value: "，"
+            - name: allArrayItemConcatChars
+              input:
+                type: list
+                items:
+                    type: object
+                    value: null
+                value:
+                    - isDefault: true
+                      label: "换行"
+                      value: "\n"
+                    - isDefault: true
+                      label: "制表符"
+                      value: "\t"
+                    - isDefault: true
+                      label: "句号"
+                      value: "。"
+                    - isDefault: true
+                      label: "逗号"
+                      value: "，"
+                    - isDefault: true
+                      label: "分号"
+                      value: "；"
+                    - isDefault: true
+                      label: "空格"
+                      value: " "
+        method: concat
+        node_inputs:
+            - name: String1
+              input:
+                value:
+                    path: USER_INPUT
+                    ref_node: "100001"
+        node_outputs:
+            output:
+                type: string
+                required: true
+                value: null
+    - id: "139819"
+      type: output
+      title: 输出_3
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Output-v2.jpg
+      description: "节点从“消息”更名为“输出”，支持中间过程的消息输出，支持流式和非流式两种方式"
+      position:
+        x: 5484.4138945541345
+        y: 26
+      parameters:
+        callTransferVoice: true
+        chatHistoryWriting: historyWrite
+        content:
+            type: string
+            value:
+                content: '{"dept_id_1":[{{output}}],"un_type_json":"dept"}'
+                type: literal
+        node_inputs:
+            - name: output
+              input:
+                type: string
+                value:
+                    path: outputList.output
+                    ref_node: "179735"
+        streamingOutput: false
+    - id: "179735"
+      type: knowledge
+      title: 知识库检索_1
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-KnowledgeQuery-v2.jpg
+      description: "在选定的知识中,根据输入变量召回最匹配的信息,并以列表形式返回"
+      position:
+        x: 5024.4138945541345
+        y: 13
+      parameters:
+        datasetParam:
+            - name: datasetList
+              input:
+                type: list
+                items:
+                    type: string
+                    value: null
+                value:
+                    - "7473768566269952036"
+            - name: topK
+              input:
+                type: integer
+                value: "5"
+            - name: useRerank
+              input:
+                type: boolean
+                value: true
+            - name: useRewrite
+              input:
+                type: boolean
+                value: true
+            - name: isPersonalOnly
+              input:
+                type: boolean
+                value: true
+            - name: datasetType
+              input:
+                type: integer
+                value: "0"
+            - name: VolcanoInfoList
+              input:
+                type: list
+                items:
+                    type: object
+                    value: null
+                value: []
+            - name: useNl2sql
+              input:
+                type: boolean
+                value: true
+            - name: minScore
+              input:
+                type: float
+                value: "0.5"
+            - name: strategy
+              input:
+                type: integer
+                value: "1"
+        node_inputs:
+            - name: Query
+              input:
+                type: string
+                value:
+                    path: output
+                    ref_node: "176276"
+            - name: enableChatHistory
+              input:
+                type: boolean
+                value: true
+            - name: chatHistoryRound
+              input:
+                type: float
+                value: 3
+        node_outputs:
+            outputList:
+                type: list
+                items:
+                    type: object
+                    properties:
+                        documentId:
+                            type: string
+                            value: null
+                        output:
+                            type: string
+                            value: null
+                    value: null
+                value: null
+    - id: "176276"
+      type: llm
+      title: 提取科室名称
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-LLM-v2.jpg
+      description: "调用大语言模型,使用变量和提示词生成回复"
+      version: "3"
+      position:
+        x: 4489.6947040570285
+        y: -233.69619155477798
+      parameters:
+        fcParamVar:
+            knowledgeFCParam: {}
+        llmParam:
+            - name: generationDiversity
+              input:
+                type: string
+                value: balance
+            - name: temperature
+              input:
+                type: float
+                value: "0.7"
+            - name: topP
+              input:
+                type: float
+                value: "0.7"
+            - name: maxTokens
+              input:
+                type: integer
+                value: "16384"
+            - name: responseFormat
+              input:
+                type: integer
+                value: "2"
+            - name: spCurrentTime
+              input:
+                type: boolean
+                value: false
+            - name: spAntiLeak
+              input:
+                type: boolean
+                value: false
+            - name: thinkingType
+              input:
+                type: string
+                value: disabled
+            - name: modelName
+              input:
+                type: string
+                value: ' Doubao-Seed-1.6-flash'
+            - name: modelType
+              input:
+                type: integer
+                value: "1095497076"
+            - name: parameters
+              input:
+                type: object
+                properties:
+                    max_completion_tokens:
+                        type: integer
+                        value: "0"
+                value: null
+            - name: prompt
+              input:
+                type: string
+                value: 输入内容{{input}}
+            - name: enableChatHistory
+              input:
+                type: boolean
+                value: false
+            - name: chatHistoryRound
+              input:
+                type: integer
+                value: "3"
+            - name: systemPrompt
+              input:
+                type: string
+                value: 从输入内容中提取科室名称
+            - name: stableSystemPrompt
+              input:
+                type: string
+                value: ""
+            - name: canContinue
+              input:
+                type: boolean
+                value: false
+            - name: loopPromptVersion
+              input:
+                type: string
+                value: ""
+            - name: loopPromptName
+              input:
+                type: string
+                value: ""
+            - name: loopPromptId
+              input:
+                type: string
+                value: ""
+        node_inputs:
+            - name: input
+              input:
+                value:
+                    path: output
+                    ref_node: "112337"
+        node_outputs:
+            output:
+                type: string
+                value: null
+            reasoning_content:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            switch: false
+            timeoutMs: 180000
+    - id: "1523718"
+      type: llm
+      title: 提取科室名称_1
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-LLM-v2.jpg
+      description: "调用大语言模型,使用变量和提示词生成回复"
+      version: "3"
+      position:
+        x: 4104.4138945541345
+        y: 1049.5
+      parameters:
+        fcParamVar:
+            knowledgeFCParam: {}
+        llmParam:
+            - name: generationDiversity
+              input:
+                type: string
+                value: balance
+            - name: temperature
+              input:
+                type: float
+                value: "0.7"
+            - name: topP
+              input:
+                type: float
+                value: "0.7"
+            - name: maxTokens
+              input:
+                type: integer
+                value: "16384"
+            - name: responseFormat
+              input:
+                type: integer
+                value: "2"
+            - name: spCurrentTime
+              input:
+                type: boolean
+                value: false
+            - name: spAntiLeak
+              input:
+                type: boolean
+                value: false
+            - name: thinkingType
+              input:
+                type: string
+                value: disabled
+            - name: modelName
+              input:
+                type: string
+                value: ' Doubao-Seed-1.6-flash'
+            - name: modelType
+              input:
+                type: integer
+                value: "1095497076"
+            - name: parameters
+              input:
+                type: object
+                properties:
+                    max_completion_tokens:
+                        type: integer
+                        value: "0"
+                value: null
+            - name: prompt
+              input:
+                type: string
+                value: 输入内容{{input}}
+            - name: enableChatHistory
+              input:
+                type: boolean
+                value: false
+            - name: chatHistoryRound
+              input:
+                type: integer
+                value: "3"
+            - name: systemPrompt
+              input:
+                type: string
+                value: 从输入内容中提取科室名称
+            - name: stableSystemPrompt
+              input:
+                type: string
+                value: ""
+            - name: canContinue
+              input:
+                type: boolean
+                value: false
+            - name: loopPromptVersion
+              input:
+                type: string
+                value: ""
+            - name: loopPromptName
+              input:
+                type: string
+                value: ""
+            - name: loopPromptId
+              input:
+                type: string
+                value: ""
+        node_inputs:
+            - name: input
+              input:
+                value:
+                    path: output
+                    ref_node: "168803"
+        node_outputs:
+            output:
+                type: string
+                value: null
+            reasoning_content:
+                type: string
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            switch: false
+            timeoutMs: 180000
+    - id: "1859444"
+      type: output
+      title: 输出_4
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Output-v2.jpg
+      description: "节点从“消息”更名为“输出”，支持中间过程的消息输出，支持流式和非流式两种方式"
+      position:
+        x: 5024.4138945541345
+        y: 1075.5
+      parameters:
+        callTransferVoice: true
+        chatHistoryWriting: historyWrite
+        content:
+            type: string
+            value:
+                content: '{"dept_id_1":[{{output}}],"un_type_json":"dept"}'
+                type: literal
+        node_inputs:
+            - name: output
+              input:
+                type: string
+                value:
+                    path: outputList.output
+                    ref_node: "1986404"
+        streamingOutput: false
+    - id: "1986404"
+      type: knowledge
+      title: 知识库检索_2
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-KnowledgeQuery-v2.jpg
+      description: "在选定的知识中,根据输入变量召回最匹配的信息,并以列表形式返回"
+      position:
+        x: 4564.4138945541345
+        y: 1062.5
+      parameters:
+        datasetParam:
+            - name: datasetList
+              input:
+                type: list
+                items:
+                    type: string
+                    value: null
+                value:
+                    - "7473768566269952036"
+            - name: topK
+              input:
+                type: integer
+                value: "5"
+            - name: useRerank
+              input:
+                type: boolean
+                value: true
+            - name: useRewrite
+              input:
+                type: boolean
+                value: true
+            - name: isPersonalOnly
+              input:
+                type: boolean
+                value: true
+            - name: datasetType
+              input:
+                type: integer
+                value: "0"
+            - name: VolcanoInfoList
+              input:
+                type: list
+                items:
+                    type: object
+                    value: null
+                value: []
+            - name: useNl2sql
+              input:
+                type: boolean
+                value: true
+            - name: minScore
+              input:
+                type: float
+                value: "0.5"
+            - name: strategy
+              input:
+                type: integer
+                value: "1"
+        node_inputs:
+            - name: Query
+              input:
+                value:
+                    path: output
+                    ref_node: "1523718"
+            - name: enableChatHistory
+              input:
+                type: boolean
+                value: true
+            - name: chatHistoryRound
+              input:
+                type: float
+                value: 3
+        node_outputs:
+            outputList:
+                type: list
+                items:
+                    type: object
+                    properties:
+                        documentId:
+                            type: string
+                            value: null
+                        output:
+                            type: string
+                            value: null
+                    value: null
+                value: null
+    - id: "1561012"
+      type: output
+      title: 科室推荐_1
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Output-v2.jpg
+      description: "节点从“消息”更名为“输出”，支持中间过程的消息输出，支持流式和非流式两种方式"
+      position:
+        x: 5095.418863494445
+        y: 322.8853527064085
+      parameters:
+        callTransferVoice: true
+        chatHistoryWriting: historyWrite
+        content:
+            type: string
+            value:
+                content: '{{output}}'
+                type: literal
+        node_inputs:
+            - name: output
+              input:
+                value:
+                    path: output
+                    ref_node: "112337"
+        streamingOutput: true
+    - id: "134778"
+      type: intent
+      title: 意图识别
+      icon: https://lf3-static.bytednsdoc.com/obj/eden-cn/dvsmryvd_avi_dvsm/ljhwZthlaukjlkulzlp/icon/icon-Intent-v2.jpg
+      description: "用于用户输入的意图识别，并将其与预设意图选项进行匹配。"
+      position:
+        x: 350.31263453761784
+        y: 1281
+      parameters:
+        chatHistorySetting:
+            chatHistoryRound: 3
+            enableChatHistory: false
+        intents:
+            - name: 医院基础信息：主要解决“物理位置”和“办事流程”问题，不涉及医疗诊断，专注于提供医院物理环境、科室分布、就诊流程（如怎么缴费、如何建档）以及行政办公时间的咨询服务，严禁涉及临床诊断建议
+        llmParam:
+            chatHistoryRound: 3
+            enableChatHistory: false
+            generationDiversity: default_val
+            maxTokens: 16384
+            modelName: ' Doubao-Seed-1.6-flash'
+            modelType: 1.095497076e+09
+            parameters:
+                max_completion_tokens: 0
+            prompt:
+                type: string
+                value:
+                    content: '{{query}}'
+                    type: literal
+            responseFormat: 2
+            systemPrompt:
+                type: string
+                value:
+                    content: ""
+                    type: literal
+            temperature: 1
+            thinkingType: disabled
+            topP: 0.7
+        mode: top_speed
+        node_inputs:
+            - name: query
+              input:
+                value:
+                    path: USER_INPUT
+                    ref_node: "100001"
+        node_outputs:
+            classificationId:
+                type: integer
+                value: null
+        settingOnError:
+            processType: 1
+            retryTimes: 0
+            timeoutMs: 60000
+        version: "2"
+edges:
+    - source_node: "100001"
+      target_node: "134778"
+    - source_node: "139819"
+      target_node: "900001"
+    - source_node: "126077"
+      target_node: "900001"
+    - source_node: "196192"
+      target_node: "900001"
+    - source_node: "158280"
+      target_node: "900001"
+    - source_node: "109161"
+      target_node: "900001"
+    - source_node: "199746"
+      target_node: "900001"
+    - source_node: "1859444"
+      target_node: "900001"
+    - source_node: "1561012"
+      target_node: "900001"
+    - source_node: "196270"
+      target_node: "112337"
+      source_port: loop-output
+    - source_node: "112337"
+      target_node: "176276"
+    - source_node: "112337"
+      target_node: "1561012"
+    - source_node: "134778"
+      target_node: "122214"
+      source_port: default
+    - source_node: "122214"
+      target_node: "196270"
+      source_port: branch_0
+    - source_node: "122214"
+      target_node: "168803"
+      source_port: branch_1
+    - source_node: "122214"
+      target_node: "168803"
+      source_port: branch_2
+    - source_node: "122214"
+      target_node: "196270"
+      source_port: branch_3
+    - source_node: "122214"
+      target_node: "196270"
+      source_port: branch_4
+    - source_node: "122214"
+      target_node: "119152"
+      source_port: branch_6
+    - source_node: "122214"
+      target_node: "168803"
+      source_port: branch_7
+    - source_node: "122214"
+      target_node: "155213"
+      source_port: branch_8
+    - source_node: "122214"
+      target_node: "168803"
+      source_port: branch_9
+    - source_node: "122214"
+      target_node: "145463"
+      source_port: branch_10
+    - source_node: "122214"
+      target_node: "155213"
+      source_port: default
+    - source_node: "122214"
+      target_node: "178175"
+      source_port: branch_5
+    - source_node: "168803"
+      target_node: "199746"
+    - source_node: "168803"
+      target_node: "1523718"
+    - source_node: "178175"
+      target_node: "155250"
+    - source_node: "160780"
+      target_node: "155213"
+      source_port: true_2
+    - source_node: "160780"
+      target_node: "155213"
+      source_port: "false"
+    - source_node: "134778"
+      target_node: "155213"
+      source_port: branch_0
+    - source_node: "155213"
+      target_node: "158280"
+    - source_node: "119152"
+      target_node: "196192"
+    - source_node: "160780"
+      target_node: "119152"
+      source_port: true_1
+    - source_node: "155250"
+      target_node: "160780"
+    - source_node: "160780"
+      target_node: "135298"
+      source_port: "true"
+    - source_node: "135298"
+      target_node: "126077"
+    - source_node: "145463"
+      target_node: "178375"
+    - source_node: "178375"
+      target_node: "116598"
+    - source_node: "116598"
+      target_node: "109161"
+    - source_node: "179735"
+      target_node: "139819"
+    - source_node: "176276"
+      target_node: "179735"
+    - source_node: "1523718"
+      target_node: "1986404"
+    - source_node: "1986404"
+      target_node: "1859444"
